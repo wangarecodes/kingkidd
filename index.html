@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="FirstAid Pro - Your complete emergency response guide with first aid instructions, video recording, and worldwide medical facility finder.">
+    <meta name="keywords" content="first aid, emergency, CPR, medical, health, hospital finder, emergency numbers">
+    <meta name="author" content="FirstAid Pro">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#e63946">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FirstAid Pro">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="FirstAid Pro">
+    <meta name="msapplication-TileColor" content="#e63946">
+    <meta name="msapplication-tap-highlight" content="no">
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="FirstAid Pro - Emergency Response Guide">
+    <meta property="og:description" content="Your complete first aid and emergency response guide">
+    <meta property="og:image" content="icons/icon-512x512.png">
+    
+    <title>FirstAid Pro - Emergency Response Guide</title>
+    
+    <!-- Manifest for PWA -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180x180.png">
+    <link rel="mask-icon" href="icons/safari-pinned-tab.svg" color="#e63946">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Capacitor (for native app) -->
+    <script src="https://unpkg.com/@aspect-ratio/cordova-plugin-statusbar" defer></script>
+</head>
+<body>
+    <!-- Emergency Call Banner -->
+    <div class="emergency-banner">
+        <a href="tel:911" class="emergency-call">
+            <i class="fas fa-phone-alt"></i>
+            <span>Call Emergency: 911</span>
+        </a>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <i class="fas fa-kit-medical"></i>
+            <h1>FirstAid Pro</h1>
+        </div>
+        <p class="tagline">Your Emergency Response Guide</p>
+    </header>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search emergencies (e.g., burns, choking, CPR...)">
+            <button id="voiceSearchBtn" class="voice-btn" title="Voice Search">
+                <i class="fas fa-microphone"></i>
+            </button>
+        </div>
+        <div id="searchResults" class="search-results"></div>
+    </div>
+
+    <!-- Quick Actions -->
+    <section class="quick-actions">
+        <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+        <div class="action-buttons">
+            <button class="action-btn record-video" id="recordVideoBtn">
+                <i class="fas fa-video"></i>
+                <span>Record Video</span>
+            </button>
+            <button class="action-btn record-audio" id="recordAudioBtn">
+                <i class="fas fa-microphone-alt"></i>
+                <span>Record Audio</span>
+            </button>
+            <button class="action-btn location-btn" id="shareLocationBtn">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Share Location</span>
+            </button>
+            <button class="action-btn sos-btn" id="sosBtn">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>SOS Alert</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Recording Modal -->
+    <div id="recordingModal" class="modal">
+        <div class="modal-content recording-modal">
+            <div class="modal-header">
+                <h2 id="recordingTitle">Recording</h2>
+                <button class="close-btn" id="closeRecordingModal">&times;</button>
+            </div>
+            <div class="recording-container">
+                <video id="videoPreview" autoplay muted playsinline></video>
+                <audio id="audioPreview" controls style="display:none;"></audio>
+                <div class="recording-controls">
+                    <div id="recordingStatus" class="recording-status">
+                        <span class="recording-dot"></span>
+                        <span id="recordingTime">00:00</span>
+                    </div>
+                    <div class="control-buttons">
+                        <button id="startRecordBtn" class="control-btn start">
+                            <i class="fas fa-circle"></i> Start
+                        </button>
+                        <button id="stopRecordBtn" class="control-btn stop" disabled>
+                            <i class="fas fa-stop"></i> Stop
+                        </button>
+                        <button id="switchCameraBtn" class="control-btn switch">
+                            <i class="fas fa-sync-alt"></i> Switch
+                        </button>
+                    </div>
+                </div>
+                <div id="recordedMedia" class="recorded-media">
+                    <video id="recordedVideo" controls></video>
+                    <div class="download-actions">
+                        <button id="downloadRecordingBtn" class="download-btn">
+                            <i class="fas fa-download"></i> Download Recording
+                        </button>
+                        <button id="newRecordingBtn" class="new-btn">
+                            <i class="fas fa-redo"></i> New Recording
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emergency Categories -->
+    <section class="categories">
+        <h2><i class="fas fa-list"></i> Emergency Categories</h2>
+        <div class="category-grid" id="categoryGrid">
+            <!-- Categories will be populated by JavaScript -->
+        </div>
+    </section>
+
+    <!-- Emergency Guide Modal -->
+    <div id="guideModal" class="modal">
+        <div class="modal-content guide-modal">
+            <div class="modal-header">
+                <button class="back-btn" id="backToCategories">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2 id="guideTitle">Emergency Guide</h2>
+                <button class="close-btn" id="closeGuideModal">&times;</button>
+            </div>
+            <div class="guide-content" id="guideContent">
+                <!-- Guide content will be populated by JavaScript -->
+            </div>
+            <div class="guide-actions">
+                <button class="guide-action-btn speak-btn" id="speakGuideBtn">
+                    <i class="fas fa-volume-up"></i> Read Aloud
+                </button>
+                <button class="guide-action-btn print-btn" id="printGuideBtn">
+                    <i class="fas fa-print"></i> Print
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Location Modal -->
+    <div id="locationModal" class="modal">
+        <div class="modal-content location-modal">
+            <div class="modal-header">
+                <h2>Your Location</h2>
+                <button class="close-btn" id="closeLocationModal">&times;</button>
+            </div>
+            <div class="location-content">
+                <div id="locationInfo" class="location-info">
+                    <i class="fas fa-spinner fa-spin"></i> Getting your location...
+                </div>
+                <div class="location-actions">
+                    <button id="copyLocationBtn" class="location-action-btn">
+                        <i class="fas fa-copy"></i> Copy Coordinates
+                    </button>
+                    <button id="shareWhatsAppBtn" class="location-action-btn whatsapp">
+                        <i class="fab fa-whatsapp"></i> Share via WhatsApp
+                    </button>
+                    <button id="openMapsBtn" class="location-action-btn maps">
+                        <i class="fas fa-map"></i> Open in Maps
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SOS Modal -->
+    <div id="sosModal" class="modal">
+        <div class="modal-content sos-modal">
+            <div class="modal-header sos-header">
+                <h2><i class="fas fa-exclamation-triangle"></i> SOS Alert</h2>
+                <button class="close-btn" id="closeSosModal">&times;</button>
+            </div>
+            <div class="sos-content">
+                <p class="sos-message">Send emergency alert to your contacts with your current location.</p>
+                <div class="emergency-contacts">
+                    <h3>Emergency Contacts</h3>
+                    <div id="contactsList" class="contacts-list">
+                        <!-- Contacts will be managed by JavaScript -->
+                    </div>
+                    <button id="addContactBtn" class="add-contact-btn">
+                        <i class="fas fa-plus"></i> Add Contact
+                    </button>
+                </div>
+                <textarea id="sosMessage" placeholder="Additional message (optional)..."></textarea>
+                <button id="sendSosBtn" class="send-sos-btn">
+                    <i class="fas fa-paper-plane"></i> Send SOS Alert
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Important Numbers Section -->
+    <section class="important-numbers">
+        <h2><i class="fas fa-phone"></i> Emergency Numbers <span id="countryName">(Detecting location...)</span></h2>
+        <div class="numbers-grid" id="emergencyNumbersGrid">
+            <!-- Will be populated dynamically based on country -->
+            <a href="tel:911" class="number-card">
+                <i class="fas fa-ambulance"></i>
+                <span class="number-title">Emergency</span>
+                <span class="number">911</span>
+            </a>
+            <a href="tel:911" class="number-card">
+                <i class="fas fa-shield-alt"></i>
+                <span class="number-title">Police</span>
+                <span class="number">911</span>
+            </a>
+            <a href="tel:911" class="number-card">
+                <i class="fas fa-fire"></i>
+                <span class="number-title">Fire</span>
+                <span class="number">911</span>
+            </a>
+            <a href="tel:911" class="number-card">
+                <i class="fas fa-ambulance"></i>
+                <span class="number-title">Ambulance</span>
+                <span class="number">911</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Find Nearby Medical Facilities Section -->
+    <section class="nearby-facilities">
+        <h2><i class="fas fa-map-marked-alt"></i> Find Nearby Medical Facilities</h2>
+        
+        <!-- Location Selection -->
+        <div class="location-selector">
+            <div class="location-tabs">
+                <button class="location-tab active" data-mode="my-location">
+                    <i class="fas fa-crosshairs"></i> My Location
+                </button>
+                <button class="location-tab" data-mode="custom-location">
+                    <i class="fas fa-search-location"></i> Help Someone Else
+                </button>
+            </div>
+            
+            <div class="custom-location-input" id="customLocationInput" style="display: none;">
+                <div class="location-search-box">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <input type="text" id="locationSearchInput" placeholder="Enter city, address, or place (e.g., San Francisco, USA)">
+                    <button id="searchLocationBtn" class="search-location-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <div id="locationSuggestions" class="location-suggestions"></div>
+                <div id="selectedLocation" class="selected-location"></div>
+            </div>
+            
+            <div class="current-search-location" id="currentSearchLocation">
+                <i class="fas fa-info-circle"></i>
+                <span>Searching near: <strong id="searchLocationName">Your current location</strong></span>
+            </div>
+        </div>
+
+        <!-- Country Selector for Emergency Numbers -->
+        <div class="country-selector-box">
+            <label><i class="fas fa-phone-alt"></i> Emergency Numbers for:</label>
+            <div class="country-select-wrapper">
+                <select id="countrySelect" class="country-select">
+                    <option value="auto">🌍 Auto-detect my country</option>
+                </select>
+                <button id="applyCountryBtn" class="apply-country-btn">Apply</button>
+            </div>
+        </div>
+
+        <div class="facility-buttons">
+            <button class="facility-btn" data-type="hospital">
+                <i class="fas fa-hospital"></i>
+                <span>Hospitals</span>
+            </button>
+            <button class="facility-btn" data-type="pharmacy">
+                <i class="fas fa-pills"></i>
+                <span>Pharmacies</span>
+            </button>
+            <button class="facility-btn" data-type="doctor">
+                <i class="fas fa-user-md"></i>
+                <span>Clinics</span>
+            </button>
+            <button class="facility-btn" data-type="dentist">
+                <i class="fas fa-tooth"></i>
+                <span>Dentists</span>
+            </button>
+        </div>
+        <div id="facilitiesResults" class="facilities-results">
+            <p class="facilities-hint"><i class="fas fa-info-circle"></i> Click a button above to find nearby medical facilities</p>
+        </div>
+        <div id="facilitiesMap" class="facilities-map"></div>
+    </section>
+
+    <!-- Tips Section -->
+    <section class="tips-section">
+        <h2><i class="fas fa-lightbulb"></i> First Aid Tips</h2>
+        <div class="tips-carousel" id="tipsCarousel">
+            <!-- Tips will be populated by JavaScript -->
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p><strong>Disclaimer:</strong> This app provides general first aid guidance. Always call emergency services (911) for serious emergencies. This is not a substitute for professional medical advice.</p>
+        <p>&copy; 2026 FirstAid Pro. Stay Safe, Save Lives.</p>
+    </footer>
+
+    <script src="emergencyData.js"></script>
+    <script src="app.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then((registration) => {
+                        console.log('ServiceWorker registered:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.log('ServiceWorker registration failed:', error);
+                    });
+            });
+        }
+
+        // Handle PWA install prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // Show install button or banner
+            showInstallPromotion();
+        });
+
+        function showInstallPromotion() {
+            // You can show a custom install button here
+            console.log('App can be installed');
+        }
+
+        // Handle successful install
+        window.addEventListener('appinstalled', () => {
+            console.log('FirstAid Pro was installed');
+            deferredPrompt = null;
+        });
+    </script>
+</body>
+</html>

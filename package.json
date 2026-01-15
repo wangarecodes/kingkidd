@@ -1,0 +1,43 @@
+{
+  "name": "firstaid-pro",
+  "version": "1.0.0",
+  "description": "FirstAid Pro - Emergency Response Guide App",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "build:icons": "npx pwa-asset-generator icons/icon.svg icons --background '#e63946' --splash-only false --icon-only false",
+    "cap:init": "npx cap init \"FirstAid Pro\" com.firstaidpro.app --web-dir .",
+    "cap:add:android": "npx cap add android",
+    "cap:add:ios": "npx cap add ios",
+    "cap:sync": "npx cap sync",
+    "cap:open:android": "npx cap open android",
+    "cap:open:ios": "npx cap open ios",
+    "cap:build": "npx cap sync && npx cap open android",
+    "generate:apk": "cd android && ./gradlew assembleDebug",
+    "generate:aab": "cd android && ./gradlew bundleRelease"
+  },
+  "keywords": [
+    "first-aid",
+    "emergency",
+    "medical",
+    "health",
+    "pwa",
+    "mobile-app"
+  ],
+  "author": "FirstAid Pro Team",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "@capacitor/android": "^5.0.0",
+    "@capacitor/cli": "^5.0.0",
+    "@capacitor/core": "^5.0.0",
+    "@capacitor/ios": "^5.0.0",
+    "@capacitor/camera": "^5.0.0",
+    "@capacitor/geolocation": "^5.0.0",
+    "@capacitor/share": "^5.0.0",
+    "@capacitor/splash-screen": "^5.0.0",
+    "@capacitor/status-bar": "^5.0.0",
+    "pwa-asset-generator": "^6.3.1",
+    "serve": "^14.2.0"
+  }
+}

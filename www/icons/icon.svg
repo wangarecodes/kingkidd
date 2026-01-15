@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e63946"/>
+      <stop offset="100%" style="stop-color:#c1121f"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Circle -->
+  <circle cx="256" cy="256" r="240" fill="url(#bg)"/>
+  <!-- White Cross -->
+  <rect x="206" y="96" width="100" height="320" rx="20" fill="white"/>
+  <rect x="96" y="206" width="320" height="100" rx="20" fill="white"/>
+  <!-- Heart -->
+  <path d="M256 380 C180 310 140 260 140 210 C140 165 175 130 220 130 C245 130 256 150 256 150 C256 150 267 130 292 130 C337 130 372 165 372 210 C372 260 332 310 256 380Z" fill="#e63946" stroke="white" stroke-width="8"/>
+</svg>
